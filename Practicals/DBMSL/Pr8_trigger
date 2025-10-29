@@ -1,0 +1,110 @@
+SET SERVEROUTPUT ON;
+SET VERIFY OFF;
+
+------------------------------------------------------------
+-- Drop old objects if already exist
+------------------------------------------------------------
+DROP TABLE Library_Audit;
+DROP TABLE Library;
+DROP SEQUENCE Audit_seq;
+DROP TRIGGER before_update_library;
+DROP TRIGGER after_update_library;
+DROP TRIGGER before_delete_library;
+DROP TRIGGER after_delete_library;
+
+------------------------------------------------------------
+-- Create tables
+------------------------------------------------------------
+CREATE TABLE Library (
+    BookID NUMBER PRIMARY KEY,
+    Title VARCHAR2(100),
+    Author VARCHAR2(50),
+    Price NUMBER
+);
+
+CREATE TABLE Library_Audit (
+    AuditID NUMBER PRIMARY KEY,
+    BookID NUMBER,
+    Title VARCHAR2(100),
+    Author VARCHAR2(50),
+    Price NUMBER,
+    ActionType VARCHAR2(30)
+);
+
+------------------------------------------------------------
+-- Insert sample records into Library
+------------------------------------------------------------
+INSERT ALL
+    INTO Library VALUES (1, 'Database Systems', 'Navathe', 550)
+    INTO Library VALUES (2, 'Let Us C', 'Yashwant Kanetkar', 400)
+    INTO Library VALUES (3, 'Operating Systems', 'Galvin', 650)
+SELECT * FROM dual;
+
+COMMIT;
+
+------------------------------------------------------------
+-- Sequence and Triggers
+------------------------------------------------------------
+CREATE SEQUENCE Audit_seq START WITH 1 INCREMENT BY 1;
+
+------------------------------------------------------------
+-- BEFORE UPDATE Trigger
+------------------------------------------------------------
+CREATE OR REPLACE TRIGGER before_update_library
+BEFORE UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (AuditID, BookID, Title, Author, Price, ActionType)
+    VALUES (Audit_seq.NEXTVAL, :OLD.BookID, :OLD.Title, :OLD.Author, :OLD.Price, 'BEFORE UPDATE');
+END;
+/
+
+------------------------------------------------------------
+-- AFTER UPDATE Trigger
+------------------------------------------------------------
+CREATE OR REPLACE TRIGGER after_update_library
+AFTER UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (AuditID, BookID, Title, Author, Price, ActionType)
+    VALUES (Audit_seq.NEXTVAL, :NEW.BookID, :NEW.Title, :NEW.Author, :NEW.Price, 'AFTER UPDATE');
+END;
+/
+
+------------------------------------------------------------
+-- BEFORE DELETE Trigger
+------------------------------------------------------------
+CREATE OR REPLACE TRIGGER before_delete_library
+BEFORE DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (AuditID, BookID, Title, Author, Price, ActionType)
+    VALUES (Audit_seq.NEXTVAL, :OLD.BookID, :OLD.Title, :OLD.Author, :OLD.Price, 'BEFORE DELETE');
+END;
+/
+
+------------------------------------------------------------
+-- AFTER DELETE Trigger
+------------------------------------------------------------
+CREATE OR REPLACE TRIGGER after_delete_library
+AFTER DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (AuditID, BookID, Title, Author, Price, ActionType)
+    VALUES (Audit_seq.NEXTVAL, :OLD.BookID, :OLD.Title, :OLD.Author, :OLD.Price, 'AFTER DELETE');
+END;
+/
+
+------------------------------------------------------------
+-- Perform Update and Delete operations
+------------------------------------------------------------
+UPDATE Library SET Price = Price + 50 WHERE BookID = 1;
+DELETE FROM Library WHERE BookID = 2;
+
+COMMIT;
+
+------------------------------------------------------------
+-- View results
+------------------------------------------------------------
+SELECT * FROM Library;
+SELECT * FROM Library_Audit;
