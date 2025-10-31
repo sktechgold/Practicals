@@ -1,0 +1,60 @@
+// =====================================================
+// MongoDB MapReduce Example
+// =====================================================
+
+// Step 1: Select or Create Database
+use libraryDB
+
+// Drop old collection (optional)
+db.books.drop()
+
+// Step 2: Insert Sample Documents
+db.books.insertMany([
+  { _id: 1, title: "DBMS", author: "Korth", price: 500, category: "Database", copies: 10 },
+  { _id: 2, title: "Operating Systems", author: "Galvin", price: 400, category: "OS", copies: 5 },
+  { _id: 3, title: "Computer Networks", author: "Tanenbaum", price: 450, category: "Networking", copies: 8 },
+  { _id: 4, title: "SQL Guide", author: "Korth", price: 550, category: "Database", copies: 12 },
+  { _id: 5, title: "Linux Internals", author: "Galvin", price: 420, category: "OS", copies: 7 }
+])
+
+print("\n✅ Documents Inserted Successfully!\n")
+
+// =====================================================
+// Step 3: Define Map Function
+// The map function emits key-value pairs (author, copies)
+// =====================================================
+var mapFunction = function() {
+  emit(this.author, this.copies);
+};
+
+// =====================================================
+// Step 4: Define Reduce Function
+// The reduce function sums up all copies for each author
+// =====================================================
+var reduceFunction = function(keyAuthor, valuesCopies) {
+  return Array.sum(valuesCopies);
+};
+
+// =====================================================
+// Step 5: Execute MapReduce
+// =====================================================
+db.books.mapReduce(
+  mapFunction,
+  reduceFunction,
+  {
+    out: "total_copies_by_author"  // Output collection name
+  }
+)
+
+print("\n✅ MapReduce Executed Successfully!\n")
+
+// =====================================================
+// Step 6: View MapReduce Results
+// =====================================================
+print("🔹 Total Copies by Each Author:")
+db.total_copies_by_author.find().pretty()
+
+// =====================================================
+// END OF PROGRAM
+// =====================================================
+print("\n=== ✅ MongoDB MapReduce Example Completed Successfully ===\n")

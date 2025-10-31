@@ -1,0 +1,69 @@
+🧱 DDL (Data Definition Language) Commands
+
+CREATE DATABASE – Used to create a new database.
+USE – Selects the database to perform operations on.
+CREATE TABLE – Creates a new table with specified columns and data types.
+ALTER TABLE – Modifies the structure of an existing table (add, delete, or change columns).
+DROP TABLE – Deletes the entire table structure and its data permanently.
+
+✏️ DML (Data Manipulation Language) Commands
+
+INSERT – Adds new records (rows) into a table.
+SELECT – Retrieves data from one or more tables.
+UPDATE – Modifies existing records in a table.
+DELETE – Removes specific records from a table.
+
+-- ==============================
+--  CONNECT TO MYSQL
+-- ==============================
+mysql -u root -p;
+
+-- ==============================
+--  DATABASE CREATION (DDL)
+-- ==============================
+CREATE DATABASE college;
+USE college;
+
+-- ==============================
+--  TABLE CREATION (DDL)
+-- ==============================
+CREATE TABLE student (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(50),
+    course VARCHAR(30),
+    marks INT,
+    city VARCHAR(40)
+);
+
+-- ==============================
+--  INSERTING RECORDS (DML)
+-- ==============================
+INSERT INTO student VALUES (1, 'Amit', 'BCA', 85, 'Pune');
+INSERT INTO student VALUES (2, 'Riya', 'BBA', 78, 'Mumbai');
+INSERT INTO student VALUES (3, 'Karan', 'BCA', 92, 'Nashik');
+INSERT INTO student VALUES (4, 'Sneha', 'BSc', 88, 'Nagpur');
+
+-- ==============================
+--  DISPLAYING RECORDS (DML - SELECT)
+-- ==============================
+SELECT * FROM student;
+SELECT name, marks FROM student WHERE marks > 80;
+SELECT * FROM student ORDER BY marks DESC;
+
+-- ==============================
+--  UPDATING AND DELETING (DML)
+-- ==============================
+UPDATE student SET marks = 90 WHERE roll_no = 2;
+DELETE FROM student WHERE roll_no = 4;
+
+-- ==============================
+--  ALTER / MODIFY / DROP (DDL)
+-- ==============================
+ALTER TABLE student ADD email VARCHAR(50);
+ALTER TABLE student MODIFY course VARCHAR(40);
+DROP TABLE student;
+
+-- ==============================
+--  EXIT MYSQL
+-- ==============================
+EXIT;

@@ -1,0 +1,66 @@
+// Create or switch to a database
+use LibraryDB;
+
+// Create a collection
+db.createCollection("books");
+
+// Insert one document
+db.books.insertOne({
+  book_id: 101,
+  title: "Database Systems",
+  author: "Korth",
+  price: 550,
+  quantity: 10
+});
+
+// Insert multiple documents
+db.books.insertMany([
+  { book_id: 102, title: "Operating Systems", author: "Silberschatz", price: 600, quantity: 5 },
+  { book_id: 103, title: "Computer Networks", author: "Tanenbaum", price: 500, quantity: 8 },
+  { book_id: 104, title: "Machine Learning", author: "Tom Mitchell", price: 700, quantity: 4 }
+]);
+
+// Display all documents
+db.books.find();
+
+// Display specific fields
+db.books.find({}, { title: 1, author: 1, _id: 0 });
+
+// Find book by condition
+db.books.find({ author: "Korth" });
+
+// Use comparison operator
+db.books.find({ price: { $gt: 550 } });
+
+// Use logical operators
+db.books.find({ $and: [ { price: { $gt: 500 } }, { quantity: { $lt: 10 } } ] });
+
+// Update one document
+db.books.updateOne(
+  { book_id: 101 },
+  { $set: { price: 600 } }
+);
+
+// Update multiple documents
+db.books.updateMany(
+  { quantity: { $lt: 6 } },
+  { $set: { quantity: 6 } }
+);
+
+// Using save() method
+db.books.save({
+  _id: ObjectId("6532a8f5d4c12345ab6789cd"),
+  book_id: 101,
+  title: "Advanced DBMS",
+  author: "Korth",
+  price: 650,
+  quantity: 12
+});
+
+db.books.find({ $or: [ { author: "Korth" }, { author: "Tanenbaum" } ] });
+
+// Delete one document
+db.books.deleteOne({ book_id: 104 });
+
+// Delete multiple documents
+db.books.deleteMany({ price: { $lt: 550 } });
